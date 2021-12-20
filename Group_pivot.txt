@@ -1,0 +1,47 @@
+# We can group by a column, but if it has unique values it isn't useful
+
+EST to be of type datetime
+
+nyc.groupby('EST').mean()['Some Column']  # Let's get the average cloud cover each month
+
+nyc.groupby(nyc.EST.dt.month).mean()['Some Column']  # The previous aggregated over every month, 
+
+# what if we want to group by year and month?
+
+nyc.groupby([nyc.EST.dt.year, nyc.EST.dt.month]).mean()['Some Column']  # The previous aggregated over every month, 
+
+# what if we want to group by year and month?
+nyc.groupby([nyc.EST.dt.year.rename('year'), nyc.EST.dt.month]).mean()['Some Column']  nyc.groupby([nyc.EST.dt.year.rename('year'), nyc.EST.dt.month]).mean()['Some Column'].plot(figsize=(14,10))  # With the .agg method we can apply many functions
+
+
+nyc.groupby([nyc.EST.dt.year.rename('year'), nyc.EST.dt.month]).agg(['mean', 'max', 'count'])  # Then plot
+nyc.groupby([nyc.EST.dt.year.rename('year'), nyc.EST.dt.month]).agg(['mean', 'max', 'count'])['Some Column'].plot()  
+# Or just look at a table for a column
+
+nyc.groupby([nyc.EST.dt.year.rename('year'), nyc.EST.dt.month]).agg(['mean', 'max', 'count'])['Some Column']  
+
+##Pivot table
+
+nyc.pivot_table(index=[nyc.EST.dt.year.rename('year'), nyc.EST.dt.month], aggfunc=[np.max, np.count_nonzero],
+               values=['Some Column', 'Some Column'])  
+nyc.pivot_table(index=[nyc.EST.dt.year.rename('year'), nyc.EST.dt.month], aggfunc=[np.max, np.count_nonzero],
+               values=['Some Column', 'Some Column']).plot(figsize=(14,10)) 
+			   
+# We can "unstack" to pull a left index into a column (0 is the left most index)
+
+nyc.pivot_table(index=[nyc.EST.dt.year.rename('year'), nyc.EST.dt.month], aggfunc=[np.max, np.count_nonzero],
+               values=['Some Column', 'Some Column']).unstack(0)  
+			   # We can "unstack" to pull a left index into a column (1 is the 2nd index)
+			   
+nyc.pivot_table(index=[nyc.EST.dt.year.rename('year'), nyc.EST.dt.month], aggfunc=[np.max, np.count_nonzero],
+               values=['Some Column', 'Some Column']).unstack(1)  # Just use one value and one aggregation
+			   
+nyc.pivot_table(index=[nyc.EST.dt.year.rename('year'), nyc.EST.dt.month], aggfunc=[np.max],
+               values=['Some Column']).unstack(1)  # Just use one value and one aggregation by year
+			   
+nyc.pivot_table(index=[nyc.EST.dt.year.rename('year'), nyc.EST.dt.month], aggfunc=[np.max],
+               values=['Some Column']).unstack(1).plot(cmap='viridis', figsize=(14,10))  
+			   # Just use one value and one aggregation by month
+			   
+nyc.pivot_table(index=[nyc.EST.dt.year.rename('year'), nyc.EST.dt.month], aggfunc=[np.max],
+               values=['Some Column']).unstack(0).plot(cmap='viridis', figsize=(14,10))
